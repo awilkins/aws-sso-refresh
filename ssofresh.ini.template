@@ -1,0 +1,27 @@
+# Put me at ~/.aws/ssofresh.ini
+#
+[DEFAULT]
+# Default role for sign-ins
+#
+# Landing Zone uses this
+# role = AdministratorAccess
+# Control Tower uses this
+# role = AWSAdministratorAccess
+#
+role = AWSAdministratorAccess
+
+[account-group]
+# SSO Start URL here
+start_url = https://account-group.awsapps.com/start#/
+region = eu-west-1
+
+# List of profiles this group holds here
+profiles = account-group-one-profile-one,account-group-one-profile-two
+
+[account-group-one-profile-one]
+account_id = 888888888888
+
+[account-group-one-profile-two]
+account_id = 999999999999
+# You can override the default role
+role = PhenomenalCosmicPower

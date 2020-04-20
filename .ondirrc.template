@@ -1,0 +1,4 @@
+enter .*
+        if [ -f $PWD/.awsprofile ]; then
+                for E in $(cat .awsprofile) ; do export $E ; done
+        fi

@@ -1,0 +1,113 @@
+#!/usr/bin/python3
+
+import botocore
+import botocore.session
+import botocore.exceptions
+
+import configparser
+import os
+import subprocess
+import sys
+import time
+
+def get_creds_path():
+  return f"{os.environ['HOME']}/.aws/credentials"
+
+def get_config_path():
+  return f"{os.environ['HOME']}/.aws/ssofresh.ini"
+
+
+def get_access_token(start_url, region):
+  session=botocore.session.get_session()
+
+  oidc_client = session.create_client(
+    'sso-oidc',
+    region_name = region
+  )
+
+  oidc_client_reg = oidc_client.register_client(
+    clientName = 'ssofresh',
+    clientType = 'public'
+  )
+
+  client_id = oidc_client_reg['clientId']
+  client_secret = oidc_client_reg['clientSecret']
+
+  device_auth = oidc_client.start_device_authorization(
+    clientId = client_id,
+    clientSecret = client_secret,
+    startUrl = start_url
+  )
+
+  subprocess.check_output([
+    'xdg-open',
+    device_auth['verificationUriComplete']
+  ])
+
+  while True:
+    print('Polling ... ')
+    try:
+      token_response = oidc_client.create_token(
+        clientId=client_id,
+        clientSecret=client_secret,
+        grantType='urn:ietf:params:oauth:grant-type:device_code',
+        deviceCode=device_auth['deviceCode']
+      )
+      if 'accessToken' in token_response:
+        break
+    except botocore.exceptions.ClientError as e:
+      time.sleep(2)
+
+  access_token = token_response['accessToken']
+  return access_token
+
+def main():
+  # Fetch the config
+
+  config = configparser.ConfigParser()
+  config.read(get_config_path())
+
+  awscreds = configparser.ConfigParser()
+  awscreds.read(get_creds_path())
+
+  # Work out which account(s) we want refreshed
+  profiles = config[sys.argv[1]]['profiles'].split(',')
+  
+
+  start_url = config[sys.argv[1]]['start_url']
+  region = config[sys.argv[1]]['region']
+
+  # Get an access token
+  access_token = get_access_token(start_url, region)
+
+  session=botocore.session.get_session()
+  sso_client = session.create_client(
+    'sso',
+    region_name=region
+  )
+
+  # Get role credentials for each account
+  for profile in profiles:
+    account_id = config[profile]['account_id']
+    role = config[profile]['role']
+    role_creds = sso_client.get_role_credentials(
+      roleName = role,
+      accountId = account_id,
+      accessToken = access_token
+    )
+
+    if not awscreds.has_section(profile):
+      awscreds.add_section(profile)
+
+    awscreds[profile]['aws_access_key_id'] = role_creds['roleCredentials']['accessKeyId']
+    awscreds[profile]['aws_secret_access_key'] = role_creds['roleCredentials']['secretAccessKey']
+    awscreds[profile]['aws_session_token'] = role_creds['roleCredentials']['sessionToken']
+
+    print(f"Acct: {account_id} \u2713")
+    print(f"\texport AWS_PROFILE={profile}")
+
+  # Write them into the aws creds file
+  with open(get_creds_path(), 'w') as credsfile:
+    awscreds.write(credsfile)
+
+main()
