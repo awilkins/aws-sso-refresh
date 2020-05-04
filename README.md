@@ -40,6 +40,14 @@ A browser window will be spawned ; you'll either have to log in, or just click a
 In the future, hopefully everything will natively support the AWS SDK 2.0
 capabilties for working with SSO credentials and this will be unncessary.
 
+### TODO
+
+- Container mode : posts the link but doesn't try and open the browser
+  - Useful for e.g. VSCode Remote Containers where you don't have a desktop
+  - Auth outside the container to get creds inside the container
+- Build for self-contained Windows exe version
+  - Don't have to muck about with Python
+
 ## Caveats
 
 - This script was written for Linux ; Mac guys might need to change `xdg-open`
