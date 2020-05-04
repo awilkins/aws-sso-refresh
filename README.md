@@ -47,8 +47,3 @@ capabilties for working with SSO credentials and this will be unncessary.
   - Auth outside the container to get creds inside the container
 - Build for self-contained Windows exe version
   - Don't have to muck about with Python
-
-## Caveats
-
-- This script was written for Linux ; Mac guys might need to change `xdg-open`
-  for `open` ; or do me a PR that makes it work on either platform!
