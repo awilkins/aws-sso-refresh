@@ -33,6 +33,8 @@ can have almost friction free switching of accounts as you switch folders.
 ssofresh my-account-group
 ```
 
+A browser window will be spawned ; you'll either have to log in, or just click a confirm button if you already are.
+
 ## The Future
 
 In the future, hopefully everything will natively support the AWS SDK 2.0
