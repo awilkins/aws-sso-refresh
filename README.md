@@ -22,6 +22,16 @@ directory changes in the terminal, and a prompt program like
 [Starship](https://starship.rs/) that shows your selected AWS profile, and you
 can have almost friction free switching of accounts as you switch folders.
 
+## Prerequisites
+
+**python3** <https://www.python.org/downloads/>
+
+**boto3**
+
+```
+pip3 install boto3
+```
+
 ## Installation
 
 - Put or link `ssofresh` somewhere on your PATH (I like `~/.local/bin`)
