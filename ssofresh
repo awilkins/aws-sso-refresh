@@ -108,7 +108,7 @@ def main():
     awscreds[profile]['aws_secret_access_key'] = role_creds['roleCredentials']['secretAccessKey']
     awscreds[profile]['aws_session_token'] = role_creds['roleCredentials']['sessionToken']
 
-    print(f"Acct: {account_id} \u2713")
+    print(f"Acct: {account_id} - OK")
     print(f"\texport AWS_PROFILE={profile}")
 
   # Write them into the aws creds file
