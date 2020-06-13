@@ -66,18 +66,76 @@ def get_access_token(start_url, region):
   access_token = token_response['accessToken']
   return access_token
 
+def check_config_sanity(group_name,config):
+  if not sys.argv[1] in config:
+    print('Group "'+sys.argv[1]+'" not found in config '+ get_config_path())
+    sys.exit(1)  # abort because of missing group
+
+  if not 'profiles' in config[sys.argv[1]]:
+    print('Group "'+group_name+'" requires a list of "profiles" in config '+ get_config_path())
+    sys.exit(1)  # abort because of missing profiles in group
+
+  if not 'start_url' in config[sys.argv[1]]:
+    print('Group "'+group_name+'" requires a "start_url" value in config '+ get_config_path())
+    sys.exit(1)  # abort because of missing start_url in group
+
+  if len(config[sys.argv[1]]['start_url']) == 0:
+    print('Group "'+group_name+'" "start_url" cannot be empty in config '+ get_config_path())
+    sys.exit(1)  # abort because of empty start_url in group
+
+  if not 'region' in config[sys.argv[1]]:
+    print('Group "'+group_name+'" requires a "region" value in config '+ get_config_path())
+    sys.exit(1)  # abort because of missing region in group
+
+  if len(config[sys.argv[1]]['region']) == 0:
+    print('Group "'+group_name+'" "region" cannot be empty in config '+ get_config_path())
+    sys.exit(1)  # abort because of empty region in group
+
+def check_profiles_sanity(profiles,config):
+  if len(profiles) == 1 and profiles[0] == '':
+    print('No profiles to process, please check your "profiles" list in config '+ get_config_path())
+    sys.exit(1)  # abort because of list of profiles being empty
+
+  for profile in profiles:
+    if not profile in config:
+      print('Profile "'+profile+'" not found in config '+ get_config_path())
+      sys.exit(1)  # abort because of missing profile
+
+    if not 'account_id' in config[profile]:
+      print('Profile "'+profile+'" requires an "account_id" value in config '+ get_config_path())
+      sys.exit(1)  # abort because of missing start_url in group
+    
+    if len(config[profile]['account_id']) == 0:
+      print('Profile "'+profile+'" "account_id" cannot be empty in config '+ get_config_path())
+      sys.exit(1)  # abort because of empty account_id in profile
+
+    if not 'role' in config[profile]:
+      print('Profile "'+profile+'" requires a "role" value in config '+ get_config_path())
+      sys.exit(1)  # abort because of missing role in group
+
+    if len(config[profile]['role']) == 0:
+      print('Profile "'+profile+'" "role" cannot be empty in config '+ get_config_path())
+      sys.exit(1)  # abort because of empty role in profile
+
 def main():
   # Fetch the config
 
+  if len(sys.argv) < 2:
+    print('Please provide a group name as a first parameter')
+    sys.exit(1)  # abort because of missing args
+
   config = configparser.ConfigParser()
   config.read(get_config_path())
+
+  check_config_sanity(sys.argv[1],config)
 
   awscreds = configparser.ConfigParser()
   awscreds.read(get_creds_path())
 
   # Work out which account(s) we want refreshed
   profiles = config[sys.argv[1]]['profiles'].split(',')
-  
+
+  check_profiles_sanity(profiles,config)
 
   start_url = config[sys.argv[1]]['start_url']
   region = config[sys.argv[1]]['region']
@@ -108,7 +166,7 @@ def main():
     awscreds[profile]['aws_secret_access_key'] = role_creds['roleCredentials']['secretAccessKey']
     awscreds[profile]['aws_session_token'] = role_creds['roleCredentials']['sessionToken']
 
-    print(f"Acct: {account_id} - OK")
+    print(f"Acct: {account_id} \u2713")
     print(f"\texport AWS_PROFILE={profile}")
 
   # Write them into the aws creds file
