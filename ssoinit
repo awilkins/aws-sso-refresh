@@ -13,7 +13,7 @@ import sys
 import boto3
 
 def smushed_name(prefix, name):
-  return f"{prefix}-{name.lower()}" 
+  return f"{prefix}-{name.replace(' ', '-').lower()}" 
 
 prefix = sys.argv[1]
 
