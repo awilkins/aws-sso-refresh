@@ -45,6 +45,21 @@ ssofresh my-account-group
 
 A browser window will be spawned ; you'll either have to log in, or just click a confirm button if you already are.
 
+## `ssoinit`
+
+New, companion script. Needs running from a role that has at least read-only
+access to Organizations in your root account.
+
+```
+ssoinit <account-group-name>
+```
+
+Prints the accounts section of an `ssofresh.ini` file *without* the default
+section and *without* the start_url, so you'll have to add these.
+
+It also lists **every** profile in your account group, which you may wish to
+trim back for normal operational use.
+
 ## The Future
 
 In the future, hopefully everything will natively support the AWS SDK 2.0
