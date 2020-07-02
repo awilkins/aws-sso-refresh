@@ -3,7 +3,7 @@
 # This script will create an initial skeleton of an ssofresh.ini for a whole org
 #
 # Usage : Set up credentials with access to the root organization
-# 
+#
 #         Run with prefix e.g. `ssoinit myorg`
 #
 #         Prints a sample ssofresh.ini to console with all account IDs
@@ -13,7 +13,7 @@ import sys
 import boto3
 
 def smushed_name(prefix, name):
-  return f"{prefix}-{name.replace(' ', '-').lower()}" 
+  return f"{prefix}-{name.replace(' ', '-').lower()}"
 
 prefix = sys.argv[1]
 
@@ -42,14 +42,20 @@ while next_token is not None:
   else:
     next_token = None
 
-for account in accounts:
-  name = smushed_name(prefix, account["Name"])
-  id = account["Id"]
-  print(f"[{name}]")
-  print(f"account_id = {id}")
-  print()
+# Pass -l as argument to just get an account list with standard profile naming
+# e.g. ./ssoinit thinkmoney -l
 
-print(f"[{prefix}]")
-profiles = ",".join([smushed_name(prefix, account["Name"]) for account in accounts])
-print(f"profiles = {profiles}")
+if not "-l" in sys.argv:
+  for account in accounts:
+    name = smushed_name(prefix, account["Name"])
+    id = account["Id"]
+    print(f"[{name}]")
+    print(f"account_id = {id}")
+    print()
+  print(f"[{prefix}]")
+  profiles = ",".join([smushed_name(prefix, account["Name"]) for account in accounts])
+  print(f"profiles = {profiles}")
+else:
+  for account in accounts:
+    print(smushed_name(prefix, account["Name"]))
 
