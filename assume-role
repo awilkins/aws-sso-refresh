@@ -1,0 +1,50 @@
+#!/usr/bin/python3
+
+import boto3
+
+import configparser
+import os
+import platform
+import sys
+
+def get_creds_path():
+  if platform.system() == 'Windows':
+    user_profile = os.environ['USERPROFILE'].replace('\\', '/')
+    return f"{user_profile}/.aws/credentials"
+  return f"{os.environ['HOME']}/.aws/credentials"
+
+def get_config_path():
+  if platform.system() == 'Windows':
+    user_profile = os.environ['USERPROFILE'].replace('\\', '/')
+    return f"{user_profile}/.aws/ssofresh.ini"
+  return f"{os.environ['HOME']}/.aws/ssofresh.ini"
+
+def main():
+    awscreds = configparser.ConfigParser()
+    awscreds.read(get_creds_path())
+
+    config = configparser.ConfigParser()
+    config.read(get_config_path())
+
+    profile = sys.argv[1]
+    assumed_profile_name = "AssumedRole"
+    session = boto3.Session(profile_name=profile)
+    sts_client = session.client('sts')
+    account_id = config[profile]['account_id']
+
+    assumed_role = sts_client.assume_role(
+        RoleArn=f"arn:aws:iam::{account_id}:role/{profile.split('-')[1]}",
+        RoleSessionName=profile.split('-')[1]
+    )
+
+    if not awscreds.has_section(assumed_profile_name):
+        awscreds.add_section(assumed_profile_name)
+
+    awscreds[assumed_profile_name]['aws_access_key_id'] = assumed_role["Credentials"]["AccessKeyId"]
+    awscreds[assumed_profile_name]['aws_secret_access_key'] = assumed_role["Credentials"]["SecretAccessKey"]
+    awscreds[assumed_profile_name]['aws_session_token'] = assumed_role["Credentials"]["SessionToken"]
+
+    with open(get_creds_path(), 'w') as credsfile:
+        awscreds.write(credsfile)
+
+main()

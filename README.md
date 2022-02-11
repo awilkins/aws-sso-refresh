@@ -60,6 +60,19 @@ section and *without* the start_url, so you'll have to add these.
 It also lists **every** profile in your account group, which you may wish to
 trim back for normal operational use.
 
+## `assume-role`
+
+Uses the ssofresh.ini file to allow you to assume a role that has been created, using the profile created in the credentials file.
+
+e.g. for group abc, using credentials for Developer from SSO, assume role of Developer:
+`./assume-role abc-Developer`
+
+Will assume the role and fill the profile `AssumedRole` in your local credentials file, ready for use: `--profile AssumedRole`
+
+<strong> This was a quickly thrown together script, with some limitations: </strong>
+
+* requires the group to be one string, ended with "-" (so `g1-developer` not `group-1-developer`)
+
 ## The Future
 
 In the future, hopefully everything will natively support the AWS SDK 2.0
