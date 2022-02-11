@@ -27,14 +27,15 @@ def main():
     config.read(get_config_path())
 
     profile = sys.argv[1]
+    aws_profile_name = profile.split('-')[1]
     assumed_profile_name = "AssumedRole"
     session = boto3.Session(profile_name=profile)
     sts_client = session.client('sts')
     account_id = config[profile]['account_id']
 
     assumed_role = sts_client.assume_role(
-        RoleArn=f"arn:aws:iam::{account_id}:role/{profile.split('-')[1]}",
-        RoleSessionName=profile.split('-')[1]
+        RoleArn=f"arn:aws:iam::{account_id}:role/{aws_profile_name}",
+        RoleSessionName=aws_profile_name
     )
 
     if not awscreds.has_section(assumed_profile_name):
@@ -46,5 +47,8 @@ def main():
 
     with open(get_creds_path(), 'w') as credsfile:
         awscreds.write(credsfile)
+
+    print(f"AssumedRole profile now using {aws_profile_name} role")
+    print("")
 
 main()
