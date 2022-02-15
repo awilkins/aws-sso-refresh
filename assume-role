@@ -27,7 +27,7 @@ def main():
     config.read(get_config_path())
 
     profile = sys.argv[1]
-    aws_profile_name = profile.split('-')[1]
+    aws_profile_name = config[profile]['assumes']
     assumed_profile_name = "AssumedRole"
     session = boto3.Session(profile_name=profile)
     sts_client = session.client('sts')
