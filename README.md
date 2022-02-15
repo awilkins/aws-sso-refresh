@@ -40,10 +40,12 @@ pip3 install boto3
 ## Usage
 
 ```
-ssofresh my-account-group
+ssofresh my-account-group [--assume-roles]
 ```
 
 A browser window will be spawned ; you'll either have to log in, or just click a confirm button if you already are.
+
+Optionally can provide the `asssume-roles` flag to use an account to assume another role. Helpful where you have one account for the SSO login that can't do anything except assume another role which then has access to AWS resources.
 
 ## `ssoinit`
 
@@ -59,15 +61,6 @@ section and *without* the start_url, so you'll have to add these.
 
 It also lists **every** profile in your account group, which you may wish to
 trim back for normal operational use.
-
-## `assume-role`
-
-Uses the ssofresh.ini file to allow you to assume a role.
-
-e.g. in the template file, using the account-group-one-profile-one:
-`./assume-role account-group-one-profile-one`
-
-Will assume the role (`PhenomenalCosmicPower`, from the ini file) and fill the profile `AssumedRole` in your local credentials file, ready for use: `--profile AssumedRole`
 
 ## The Future
 

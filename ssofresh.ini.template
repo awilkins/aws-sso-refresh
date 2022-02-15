@@ -20,10 +20,11 @@ profiles = account-group-one-profile-one,account-group-one-profile-two
 
 [account-group-one-profile-one]
 account_id = 888888888888
-assumes = PhenomenalCosmicPower
+# If your SSO role can login and assume roles but nothing else
+# Use this to optionally assume a more useful role
+assumes = AbsoluteCosmicPower
 
 [account-group-one-profile-two]
 account_id = 999999999999
 # You can override the default role
 role = PhenomenalCosmicPower
-assumes = PhenomenalCosmicPower
