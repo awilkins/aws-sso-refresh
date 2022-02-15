@@ -62,16 +62,12 @@ trim back for normal operational use.
 
 ## `assume-role`
 
-Uses the ssofresh.ini file to allow you to assume a role that has been created, using the profile created in the credentials file. Set `assumes` property in the ssofresh ini file to use the assume role script 
+Uses the ssofresh.ini file to allow you to assume a role.
 
-e.g. for group abc, using credentials for Developer from SSO, assume role of Developer:
-`./assume-role abc-Developer`
+e.g. in the template file, using the account-group-one-profile-one:
+`./assume-role account-group-one-profile-one`
 
-Will assume the role and fill the profile `AssumedRole` in your local credentials file, ready for use: `--profile AssumedRole`
-
-<strong> This was a quickly thrown together script, with some limitations: </strong>
-
-* requires the group to be one string, ended with "-" (so `g1-developer` not `group-1-developer`)
+Will assume the role (`PhenomenalCosmicPower`, from the ini file) and fill the profile `AssumedRole` in your local credentials file, ready for use: `--profile AssumedRole`
 
 ## The Future
 
